@@ -1,15 +1,13 @@
-export function Index() {
+import React from "react";
+import Header from "../components/Header";
+
+const Home: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <header>
-
-      </header>
-      <main>
-        hello world!!
-      </main>
-      <footer>
-
-      </footer>
+    <div>
+      <Header />
+      <div>Welcome to GourmeApp!</div>
     </div>
   );
-}
+};
+
+export default Home;
