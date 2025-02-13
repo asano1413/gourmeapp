@@ -5,7 +5,10 @@ const Home: React.FC = () => {
   return (
     <div>
       <Header />
-      <div>Welcome to GourmeApp!</div>
+      <div>
+        <h1>Home</h1>
+        <p>Welcome to the home page.</p>
+      </div>
     </div>
   );
 };

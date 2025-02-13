@@ -40,10 +40,10 @@ export default function Header() {
 
             {/* サブヘッダー */}
             <div className="pt-16">
-                <div className="bg-gray-100 p-4 fixed top-16 left-0 right-0 z-40">
-                    <div className="flex justify-between">
-                        <a href='#'>コンテンツ１</a>
-                        <a href='#'>コンテンツ２</a>
+                <div className="bg-gray-100 p-2 fixed top-16 left-0 right-0 z-40">
+                    <div className="flex justify-start ml-20 gap-5">
+                        <a href='#' className='text-blue-700 border-l-1 border-r-1 border-b-2 border-blue-300 hover:bg-blue-300 hover:text-white p-4 transition-colors duration-300'>コンテンツ１</a>
+                        <a href='#' className='text-blue-700 border-l-1 border-r-1 border-b-2 border-blue-300 hover:bg-blue-300 hover:text-white p-4 transition-colors duration-300'>コンテンツ２</a>
                     </div>
                 </div>
             </div>

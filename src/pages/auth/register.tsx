@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export default function Register() {
@@ -5,6 +6,7 @@ export default function Register() {
     const [error, setError] = useState('');
     const [isNotificationOpen, setNotificationOpen] = useState(false);
     const [isMenuOpen, setMenuOpen] = useState(false);
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,8 +29,9 @@ export default function Register() {
         const data = await res.json();
         if (res.ok) {
             alert('登録が成功しました！');
+            router.push('/auth/login');
         } else {
-            alert(data.error);
+            alert(data.error||"登録に失敗しました");
         }
     };
 
