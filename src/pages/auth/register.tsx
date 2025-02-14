@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import Header from '../../components/Header';
 
 export default function Register() {
     const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
@@ -37,6 +38,7 @@ export default function Register() {
 
     return (
         <div>
+            <Header />
             <div>
                 <header className="flex justify-between items-center p-4 bg-gray-200 fixed top-0 left-0 right-0 z-50">
                     <div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
+import Header from "../components/Header";
 
 declare global {
   interface Window {
@@ -97,67 +98,71 @@ export default function RestaurantForm() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4 text-blue-500 text-center">飲食店を登録</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="店名"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-2 border rounded mb-2"
-          required
-        />
-        <input
-          type="text"
-          name="address"
-          placeholder="住所"
-          value={formData.address}
-          onChange={handleChange}
-          className="w-full p-2 border rounded mb-2"
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="ジャンル (例: カフェ, ラーメン)"
-          value={formData.category}
-          onChange={handleChange}
-          className="w-full p-2 border rounded mb-2"
-          required
-        />
-        <input
-          type="text"
-          name="openingHours"
-          placeholder="営業時間 (例: 10:00 - 22:00)"
-          value={formData.openingHours}
-          onChange={handleChange}
-          className="w-full p-2 border rounded mb-2"
-        />
-        <div className="flex mb-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <FaStar
-              key={star}
-              className={`cursor-pointer text-2xl ${star <= formData.rating ? "text-yellow-400" : "text-gray-300"}`}
-              onClick={() => handleRatingClick(star)}
-            />
-          ))}
-        </div>
-        <input
-          type="file"
-          name="image"
-          onChange={handleFileChange}
-          className="w-full p-2 border rounded mb-2"
-        />
-        <div id="map" className="w-full h-64 mb-4"></div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          登録
-        </button>
-      </form>
-    </div>
+    <div className="w-full h-full bg-gray-50">
+      <Header />
+      <div className="mt-20 max-w-lg mx-auto p-4 bg-white shadow rounded-lg">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-500 text-center">レビュー作成</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder="店名"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+            required
+          />
+          <input
+            type="text"
+            name="address"
+            placeholder="住所"
+            value={formData.address}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+            required
+          />
+          <input
+            type="text"
+            name="category"
+            placeholder="ジャンル (例: カフェ, ラーメン)"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+            required
+          />
+          <input
+            type="text"
+            name="openingHours"
+            placeholder="営業時間 (例: 10:00 - 22:00)"
+            value={formData.openingHours}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <div className="flex mb-2">
+            <p className="text-black">評価 :</p>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                className={`cursor-pointer text-2xl ${star <= formData.rating ? "text-yellow-400" : "text-gray-300"}`}
+                onClick={() => handleRatingClick(star)}
+              />
+            ))}
+          </div>
+          <input
+            type="file"
+            name="image"
+            onChange={handleFileChange}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <div id="map" className="w-full h-64 mb-4"></div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          >
+            登録
+          </button>
+        </form>
+      </div>
+    </div>  
   );
 }

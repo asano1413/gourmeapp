@@ -1,0 +1,32 @@
+import { useEffect, useState } from "react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+
+const containerStyle = {
+  width: "100%",
+  height: "500px",
+};
+
+const center = {
+  lat: 35.682839,
+  lng: 139.759455,
+};
+
+export default function MapComponent() {
+  const [restaurants, setRestaurants] = useState([]);
+
+  useEffect(() => {
+    // ダミーデータとしてローカルストレージから取得（本来はAPIから取得）
+    const storedRestaurants = JSON.parse(localStorage.getItem("restaurants") || "[]");
+    setRestaurants(storedRestaurants);
+  }, []);
+
+  return (
+    <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={12}>
+        {restaurants.map((restaurant, index) => (
+          <Marker key={index} position={{ lat: restaurant.lat, lng: restaurant.lng }} />
+        ))}
+      </GoogleMap>
+    </LoadScript>
+  );
+}
