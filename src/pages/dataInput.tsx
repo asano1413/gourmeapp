@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 declare global {
   interface Window {
@@ -163,6 +164,7 @@ export default function RestaurantForm() {
           </button>
         </form>
       </div>
-    </div>  
+      <Footer />
+    </div>
   );
 }

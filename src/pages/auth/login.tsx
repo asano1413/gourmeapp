@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import Footer from '@/components/Footer';
 
 export default function Login() {
-    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const { data: session } = useSession();
@@ -14,7 +15,7 @@ export default function Login() {
         e.preventDefault();
         const res = await signIn('credentials', {
             redirect: false,
-            name,
+            email,
             password,
         });
 
@@ -53,12 +54,12 @@ export default function Login() {
                 <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
                     <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">ログイン</h2>
                     <form onSubmit={handleSubmit} className="flex flex-col items-center">
-                        <p className='text-left'>アカウント名</p>
+                        <p className='text-left'>メールアドレス</p>
                         <input
-                            type="text"
-                            placeholder="名前"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            type="username"
+                            placeholder="メールアドレス"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
                         />
                         <p className='text-left'>パスワード</p>
@@ -76,6 +77,7 @@ export default function Login() {
                     </p>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }

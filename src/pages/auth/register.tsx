@@ -1,13 +1,22 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import Header from '../../components/Header';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+
+type ErrorsState = {
+    username: string[] | null;
+    email: string[] | null;
+    password: string[] | null;
+    confirmPassword: string[] | null;
+}
 
 export default function Register() {
+    const router = useRouter();
     const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+    const [formErrors, setFormErrors] = useState<ErrorsState>({ username: null, email: null, password: null, confirmPassword: null });
     const [error, setError] = useState('');
     const [isNotificationOpen, setNotificationOpen] = useState(false);
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,7 +26,7 @@ export default function Register() {
         e.preventDefault();
 
         if (form.password !== form.confirmPassword) {
-            setError('パスワードが一致しません');
+            setFormErrors({ ...formErrors, confirmPassword: ['パスワードが一致しません'] });
             return;
         }
 
@@ -27,12 +36,23 @@ export default function Register() {
             body: JSON.stringify(form),
         });
 
-        const data = await res.json();
-        if (res.ok) {
+        if (res.ok && res.status === 201) {
             alert('登録が成功しました！');
             router.push('/auth/login');
         } else {
-            alert(data.error||"登録に失敗しました");
+            try {
+                const data = await res.json();
+                if (typeof data.errors === "object") {
+                    setFormErrors({
+                        username: data.errors.username ?? null,
+                        email: data.errors.email ?? null,
+                        password: data.errors.password ?? null,
+                        confirmPassword: data.errors.confirmPassword ?? null,
+                    });
+                }
+            } catch (error) {
+                setError('登録に失敗しました');
+            }
         }
     };
 
@@ -74,6 +94,8 @@ export default function Register() {
                             onChange={handleChange}
                             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
                         />
+                        {formErrors.username && <p className="text-red-500">{formErrors.username}</p>}
+
                         <p>メールアドレス</p>
                         <input
                             type="email"
@@ -83,6 +105,8 @@ export default function Register() {
                             onChange={handleChange}
                             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
                         />
+                        {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
+
                         <p>パスワード</p>
                         <input
                             type="password"
@@ -92,6 +116,8 @@ export default function Register() {
                             onChange={handleChange}
                             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
                         />
+                        {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
+
                         <p>パスワード確認</p>
                         <input
                             type="password"
@@ -109,6 +135,7 @@ export default function Register() {
                     </p>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }
