@@ -22,9 +22,21 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 };
 
 export default function Threads() {
-  const [posts, setPosts] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
+  interface Post {
+    id: number;
+    title: string;
+    content: string;
+    createdAt: string;
+  }
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  interface Tag {
+    id: number;
+    name: string;
+  }
+
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [searchResults, setSearchResults] = useState<Post[]>([]);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
