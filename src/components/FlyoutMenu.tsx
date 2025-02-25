@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const FlyoutMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <div className="relative inline-block">
@@ -13,12 +14,14 @@ const FlyoutMenu = () => {
         メニュー
       </button>
       <div className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transition-transform duration-500 ease-in-out transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <button
-          onClick={toggleMenu}
-          className="absolute left-0 top-0 h-full w-2 bg-red-500 text-white focus:outline-none"
-        >
-          &times;
-        </button>
+        {isOpen && (
+          <button
+            onClick={closeMenu}
+            className="absolute left-[-32px] top-0 h-full w-8 bg-gray-200 text-black border-r border-gray-300 focus:outline-none flex items-center justify-center"
+          >
+            &times;
+          </button>
+        )}
         <ul className="h-full overflow-y-auto">
           <li className="border-b border-gray-200">
             <a href="/contact" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">

@@ -47,6 +47,7 @@ export const authConfig = {
                          if (user?.id) {
                               session.user = user as any;
                          }
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     } catch (error) {}
                }
 
@@ -87,6 +88,7 @@ export const authConfig = {
                     }
 
                     if (await bcryptjs.compare(String(credentials.password), user.password)) {
+                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
                          const { password: _p, ...userWithoutPassword } = user;
 
                          return {

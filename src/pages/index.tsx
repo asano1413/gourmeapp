@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import SearchModal from "../components/SearchModal";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { useRouter } from "next/router";
 
@@ -86,23 +87,12 @@ export default function MapComponent() {
               >
                 データ入力
               </button>
-              {isModalOpen && (
-                <div className="absolute top-20 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-20 transition-opacity duration-300 ease-in-out">
-                  <div className="bg-white p-8 rounded shadow-lg transform transition-transform duration-300 ease-in-out">
-                    <h2 className="text-2xl mb-4">検索モーダル</h2>
-                    <input
-                      type="text"
-                      placeholder="検索"
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                      className="w-full p-2 border rounded mb-4"
-                    />
-                    <button onClick={handleModalToggle} className="bg-red-500 text-white px-4 py-2 rounded">
-                      閉じる
-                    </button>
-                  </div>
-                </div>
-              )}
+              <SearchModal
+                isModalOpen={isModalOpen}
+                searchQuery={searchQuery}
+                handleSearchChange={handleSearchChange}
+                handleModalToggle={handleModalToggle}
+              />
             </div>
           </div>
         </LoadScript>
