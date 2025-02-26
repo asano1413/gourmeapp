@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import OpeningHours from "../components/AcctiveTime";
 
 declare global {
   interface Window {
@@ -34,6 +35,10 @@ export default function RestaurantForm() {
 
   const handleRatingClick = (rating: number) => {
     setFormData({ ...formData, rating });
+  };
+
+  const handleOpeningHoursChange = (hours: { [key: string]: { open: string; close: string; closed: boolean } }) => {
+    setFormData({ ...formData, openingHours: JSON.stringify(hours) });
   };
 
   const fetchCoordinates = async (address: string) => {
@@ -102,7 +107,7 @@ export default function RestaurantForm() {
     <div className="w-full h-full bg-gray-50">
       <Header />
       <div className="mt-20 max-w-lg mx-auto p-4 bg-white shadow rounded-lg">
-        <h2 className="text-2xl font-semibold mb-4 text-blue-500 text-center">レビュー作成</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center text-blue-500">レビュー作成</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -110,7 +115,7 @@ export default function RestaurantForm() {
             placeholder="店名"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
+            className="w-full p-2 border rounded mb-2 text-black"
             required
           />
           <input
@@ -119,7 +124,7 @@ export default function RestaurantForm() {
             placeholder="住所"
             value={formData.address}
             onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
+            className="w-full p-2 border rounded mb-2 text-black"
             required
           />
           <input
@@ -128,19 +133,12 @@ export default function RestaurantForm() {
             placeholder="ジャンル (例: カフェ, ラーメン)"
             value={formData.category}
             onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
+            className="w-full p-2 border rounded mb-2 text-black"
             required
           />
-          <input
-            type="text"
-            name="openingHours"
-            placeholder="営業時間 (例: 10:00 - 22:00)"
-            value={formData.openingHours}
-            onChange={handleChange}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <div className="flex mb-2">
-            <p className="text-black">評価 :</p>
+          <OpeningHours onChange={handleOpeningHoursChange} />
+          <div className="flex mb-2 items-center">
+            <p className="text-black mr-2">評価 :</p>
             {[1, 2, 3, 4, 5].map((star) => (
               <FaStar
                 key={star}
@@ -149,12 +147,23 @@ export default function RestaurantForm() {
               />
             ))}
           </div>
-          <input
-            type="file"
-            name="image"
-            onChange={handleFileChange}
-            className="w-full p-2 border rounded mb-2"
-          />
+          <div className="mb-4">
+            <label className="block text-black mb-2"></label>
+            <div className="flex items-center">
+              <label className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600">
+                写真の挿入
+                <input
+                  type="file"
+                  name="image"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+              {formData.image && (
+                <span className="ml-2 text-black">{formData.image.name}</span>
+              )}
+            </div>
+          </div>
           <div id="map" className="w-full h-64 mb-4"></div>
           <button
             type="submit"
