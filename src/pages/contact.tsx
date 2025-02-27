@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import AppLayout from "@/components/AppLayout";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -42,8 +43,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <Header />
+    <AppLayout>
       <main className="flex-grow mt-14 text-blue-500 text-center container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">お問い合わせ</h1>
         {submitted ? (
@@ -91,8 +91,7 @@ const Contact = () => {
           </form>
         )}
       </main>
-      <Footer />
-    </div>
+    </AppLayout>
   );
 };
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import SearchModal from "../components/SearchModal";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { useRouter } from "next/router";
+import React, { useState, useEffect } from 'react';
+import SearchModal from '../components/SearchModal';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { useRouter } from 'next/router';
+import AppLayout from '@/components/AppLayout';
 
 const center = {
   lat: 35.682839,
@@ -25,12 +24,12 @@ export default function MapComponent() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     // ダミーデータとしてローカルストレージから取得（本来はAPIから取得）
-    const storedRestaurants = JSON.parse(localStorage.getItem("restaurants") || "[]");
+    const storedRestaurants = JSON.parse(localStorage.getItem('restaurants') || '[]');
     setRestaurants(storedRestaurants);
   }, []);
 
@@ -39,7 +38,7 @@ export default function MapComponent() {
   };
 
   const handleDataInputRedirect = () => {
-    router.push("/dataInput");
+    router.push('/dataInput');
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +46,7 @@ export default function MapComponent() {
   };
 
   const normalizeString = (str: string) => {
-    return str.normalize("NFKC").toLowerCase();
+    return str.normalize('NFKC').toLowerCase();
   };
 
   const filteredRestaurants = restaurants.filter((restaurant) =>
@@ -60,12 +59,11 @@ export default function MapComponent() {
   };
 
   return (
-    <div className="w-full h-full bg-gray-50">
-      <Header />
+    <AppLayout>
       <div className="relative mt-20">
         <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
           <div className="relative w-[80%] h-[500px] mx-auto">
-            <GoogleMap mapContainerStyle={{ width: "100%", height: "100%" }} center={center} zoom={12}>
+            <GoogleMap mapContainerStyle={{ width: '100%', height: '100%' }} center={center} zoom={12}>
               {filteredRestaurants.map((restaurant, index) => (
                 <Marker
                   key={index}
@@ -112,7 +110,6 @@ export default function MapComponent() {
           </div>
         </div>
       )}
-      <Footer />
-    </div>
+    </AppLayout>
   );
 }

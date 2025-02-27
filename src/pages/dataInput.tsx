@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import OpeningHours from "../components/AcctiveTime";
+import { useEffect, useState } from 'react';
+import { FaStar } from 'react-icons/fa';
+import Header from '../components/layouts/Header';
+import Footer from '../components/layouts/Footer';
+import OpeningHours from '../components/AcctiveTime';
+import AppLayout from '@/components/AppLayout';
 
 declare global {
   interface Window {
@@ -12,10 +13,10 @@ declare global {
 
 export default function RestaurantForm() {
   const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    category: "",
-    openingHours: "",
+    name: '',
+    address: '',
+    category: '',
+    openingHours: '',
     lat: null,
     lng: null,
     rating: 0,
@@ -42,7 +43,7 @@ export default function RestaurantForm() {
   };
 
   const fetchCoordinates = async (address: string) => {
-    const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+    const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
     );
@@ -60,13 +61,13 @@ export default function RestaurantForm() {
   }, [formData.address]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const script = document.createElement("script");
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places`;
       script.async = true;
       script.onload = () => {
-        if (typeof window.google !== "undefined") {
-          const map = new window.google.maps.Map(document.getElementById("map") as HTMLElement, {
+        if (typeof window.google !== 'undefined') {
+          const map = new window.google.maps.Map(document.getElementById('map') as HTMLElement, {
             center: { lat: 35.6895, lng: 139.6917 },
             zoom: 15,
           });
@@ -77,7 +78,7 @@ export default function RestaurantForm() {
             draggable: true,
           });
 
-          window.google.maps.event.addListener(marker, "dragend", async function () {
+          window.google.maps.event.addListener(marker, 'dragend', async function () {
             const lat = marker.getPosition()?.lat();
             const lng = marker.getPosition()?.lng();
             if (lat && lng) {
@@ -104,9 +105,8 @@ export default function RestaurantForm() {
   };
 
   return (
-    <div className="w-full h-full bg-gray-50">
-      <Header />
-      <div className="mt-20 max-w-lg mx-auto p-4 bg-white shadow rounded-lg">
+    <AppLayout>
+      <div className="mt-24 max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
         <h2 className="text-2xl font-semibold mb-4 text-center text-blue-500">レビュー作成</h2>
         <form onSubmit={handleSubmit}>
           <input
@@ -115,7 +115,7 @@ export default function RestaurantForm() {
             placeholder="店名"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-2 border rounded mb-2 text-black"
+            className="w-full p-3 border rounded-lg mb-3 text-black"
             required
           />
           <input
@@ -124,7 +124,7 @@ export default function RestaurantForm() {
             placeholder="住所"
             value={formData.address}
             onChange={handleChange}
-            className="w-full p-2 border rounded mb-2 text-black"
+            className="w-full p-3 border rounded-lg mb-3 text-black"
             required
           />
           <input
@@ -133,11 +133,11 @@ export default function RestaurantForm() {
             placeholder="ジャンル (例: カフェ, ラーメン)"
             value={formData.category}
             onChange={handleChange}
-            className="w-full p-2 border rounded mb-2 text-black"
+            className="w-full p-3 border rounded-lg mb-3 text-black"
             required
           />
           <OpeningHours onChange={handleOpeningHoursChange} />
-          <div className="flex mb-2 items-center">
+          <div className="flex mb-3 items-center">
             <p className="text-black mr-2">評価 :</p>
             {[1, 2, 3, 4, 5].map((star) => (
               <FaStar
@@ -148,10 +148,10 @@ export default function RestaurantForm() {
             ))}
           </div>
           <div className="mb-4">
-            <label className="block text-black mb-2"></label>
+            <label className="block text-black mb-2">写真の挿入</label>
             <div className="flex items-center">
-              <label className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600">
-                写真の挿入
+              <label className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600">
+                ファイルを選択
                 <input
                   type="file"
                   name="image"
@@ -164,16 +164,15 @@ export default function RestaurantForm() {
               )}
             </div>
           </div>
-          <div id="map" className="w-full h-64 mb-4"></div>
+          <div id="map" className="w-full h-64 mb-4 rounded-lg"></div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
           >
             登録
           </button>
         </form>
       </div>
-      <Footer />
-    </div>
+    </AppLayout>
   );
 }
