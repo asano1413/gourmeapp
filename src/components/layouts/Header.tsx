@@ -1,6 +1,6 @@
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import FlyoutMenu from '../FlyoutMenu';
+import FlyoutMenu from './FlyoutMenu';
 import Link from 'next/link';
 
 export default function Header() {
