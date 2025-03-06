@@ -77,6 +77,7 @@ export default function Threads() {
 
   useEffect(() => {
     fetchPosts();
+    fetchTags();
   }, []);
 
   return (

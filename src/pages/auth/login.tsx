@@ -7,6 +7,7 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +20,10 @@ export default function Login() {
     if (res?.error) {
       alert('ログインに失敗しました');
     } else {
-      router.push('/');
+      setIsAnimating(true);
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
     }
   };
 
@@ -31,7 +35,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="flex flex-col items-center">
             <p className='text-left'>メールアドレス</p>
             <input
-              type="username"
+              type="email"
               placeholder="メールアドレス"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -52,6 +56,11 @@ export default function Login() {
           </p>
         </div>
       </div>
+      {isAnimating && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+        </div>
+      )}
     </AppLayout>
   );
 }

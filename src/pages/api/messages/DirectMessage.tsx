@@ -1,9 +1,14 @@
+"use client"; // 必ず最上部に記載
+
 import { useState, useEffect } from 'react';
+// ※もし App Router (app ディレクトリ) を使っている場合は以下のインポートに変更
+// import { useRouter } from 'next/navigation';
 import { useRouter } from 'next/router';
 
 export default function DirectMessage() {
   const [recipientId, setRecipientId] = useState('');
-  const [content, setContent] = useState('');
+  const [sendContent, setSendContent] = useState('');     // 送信用のメッセージ内容
+  const [replyContent, setReplyContent] = useState('');     // 返信用のメッセージ内容
   const [messageId, setMessageId] = useState('');
   const [messages, setMessages] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -45,13 +50,13 @@ export default function DirectMessage() {
     const res = await fetch('/api/messages/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipientId, content }),
+      body: JSON.stringify({ recipientId, content: sendContent }),
     });
 
     if (res.ok) {
       alert('メッセージが送信されました');
       setRecipientId('');
-      setContent('');
+      setSendContent('');
       fetchMessages();
     } else {
       alert('メッセージの送信に失敗しました');
@@ -65,13 +70,13 @@ export default function DirectMessage() {
     const res = await fetch('/api/messages/receive', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messageId, content }),
+      body: JSON.stringify({ messageId, content: replyContent }),
     });
 
     if (res.ok) {
       alert('返信が送信されました');
       setMessageId('');
-      setContent('');
+      setReplyContent('');
       fetchMessages();
     } else {
       alert('返信の送信に失敗しました');
@@ -80,6 +85,7 @@ export default function DirectMessage() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100">
+      {/* メッセージ送信 */}
       <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
         <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">メッセージ送信</h2>
         <form onSubmit={handleSend} className="flex flex-col items-center">
@@ -90,7 +96,7 @@ export default function DirectMessage() {
             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
           >
             <option value="">選択してください</option>
-            {following.map((user) => (
+            {following.map((user: any) => (
               <option key={user.id} value={user.id}>
                 {user.name} ({user.email})
               </option>
@@ -99,14 +105,15 @@ export default function DirectMessage() {
           <p className="text-left">メッセージ内容</p>
           <textarea
             placeholder="メッセージ内容"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={sendContent}
+            onChange={(e) => setSendContent(e.target.value)}
             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
           />
           <button type="submit" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5">送信</button>
         </form>
       </div>
 
+      {/* メッセージ返信 */}
       <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
         <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">メッセージ返信</h2>
         <form onSubmit={handleReply} className="flex flex-col items-center">
@@ -121,18 +128,19 @@ export default function DirectMessage() {
           <p className="text-left">返信内容</p>
           <textarea
             placeholder="返信内容"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={replyContent}
+            onChange={(e) => setReplyContent(e.target.value)}
             className="mb-4 p-2 border border-gray-300 rounded w-3/5"
           />
           <button type="submit" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5">返信</button>
         </form>
       </div>
 
+      {/* メッセージ履歴 */}
       <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
         <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">メッセージ履歴</h2>
         <ul>
-          {messages.map((message) => (
+          {messages.map((message: any) => (
             <li key={message.id} className="mb-4 p-2 border border-gray-300 rounded">
               <p><strong>送信者ID:</strong> {message.senderId}</p>
               <p><strong>受信者ID:</strong> {message.recipientId}</p>

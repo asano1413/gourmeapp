@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 
 const Settings = () => {
+  const { data: session } = useSession();
   const [profile, setProfile] = useState({
     username: "",
     email: "",
@@ -15,10 +17,20 @@ const Settings = () => {
   });
 
   const [currentProfile, setCurrentProfile] = useState({
-    username: "current_user",
-    email: "current@example.com",
-    password: "current_password",
+    username: "",
+    email: "",
+    password: "",
   });
+
+  useEffect(() => {
+    if (session) {
+      setCurrentProfile({
+        username: session.user?.name || "",
+        email: session.user?.email || "",
+        password: "current_password", // パスワードはセッションから取得できないため、適切に設定してください
+      });
+    }
+  }, [session]);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

@@ -10,12 +10,23 @@ const FlyoutMenu = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [followers, setFollowers] = useState<string[]>([]);
+  const [theme, setTheme] = useState('light');
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
   const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
   const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const toggleTheme = (theme: string) => {
+    setTheme(theme);
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.add(theme);
+  }, [theme]);
 
   return (
     <div className="relative inline-block">
@@ -43,13 +54,13 @@ const FlyoutMenu = () => {
           <li className="border-b border-gray-200">
             <button
               onClick={toggleProfile}
-              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 focus:outline-none"
+              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 focus:outline-none duration-300 ease-in-out"
             >
               マイページ
             </button>
             {isProfileOpen && (
               <div className="relative px-4 py-2 bg-gray-100">
-                <img src="/images/iconss8-acc_icon1.png" alt="icon" className="mt-4" />
+                <img src="/images/icons8-acc_icon1.png" alt="icon" className="mt-4" />
                 <p className='text-blue-500 mt-4'>ユーザー名</p>
                 <p className='ml-2 text-gray-700'>アカウント名</p>
                 <p className='text-blue-500 mt-2'>メール</p>
@@ -73,18 +84,26 @@ const FlyoutMenu = () => {
           <li className="border-b border-gray-200">
             <button
               onClick={toggleSettings}
-              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 focus:outline-none"
+              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 focus:outline-none duration-300 ease-in-out"
             >
               設定
             </button>
             {isSettingsOpen && (
               <div className="relative px-4 py-2 bg-gray-100">
-                <button className="w-full rounded text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none">
-                  ライトテーマ
-                </button>
-                <button className="w-full rounded text-left px-4 py-2 bg-gray-500 text-gray-700 hover:bg-gray-700 hover:text-white focus:outline-none duration-300 ease-in-out">
-                  ダークテーマ
-                </button>
+                <div className="border border-gray-300 rounded mb-2">
+                  <button
+                    onClick={() => toggleTheme('light')}
+                    className="w-full rounded text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none"
+                  >
+                    ライトテーマ
+                  </button>
+                  <button
+                    onClick={() => toggleTheme('dark')}
+                    className="w-full rounded text-left px-4 py-2 bg-gray-500 text-gray-700 hover:bg-gray-700 hover:text-white focus:outline-none duration-300 ease-in-out"
+                  >
+                    ダークテーマ
+                  </button>
+                </div>
                 <Link href="/settings" passHref legacyBehavior>
                   <a className="block px-4 py-2 text-gray-700 hover:bg-gray-200">詳細設定</a>
                 </Link>
