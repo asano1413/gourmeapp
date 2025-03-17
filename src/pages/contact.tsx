@@ -45,12 +45,12 @@ const Contact = () => {
   return (
     <AppLayout>
       <main className="flex-grow text-blue-500 text-center container mx-auto px-4 py-8 bg-gray-100">
-        <h1 className="text-3xl font-bold mt-6 mb-8">お問い合わせ</h1>
         {submitted ? (
           <p className="text-green-500">お問い合わせありがとうございます。メッセージが送信されました。</p>
         ) : (
-          <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-8 rounded shadow-md">
-            <div className="mb-4">
+          <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-12 rounded shadow-md">
+            <div className="mb-4 1-full">
+              <h1 className="text-3xl font-bold mt-6 mb-8">お問い合わせ</h1>
               <label htmlFor="name" className="block text-gray-700 font-bold mb-2">名前</label>
               <input
                 type="text"
@@ -87,7 +87,7 @@ const Contact = () => {
               />
               {error.message && <p className="text-red-500 text-sm">メッセージを入力してください。</p>}
             </div>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">送信</button>
+            <button type="submit" className="bg-sky-500 text-white mt-4 px-6 py-3 rounded hover:bg-sky-600 duration-500 ease-in-out">送信</button>
           </form>
         )}
       </main>

@@ -30,8 +30,8 @@ export default function Login() {
   return (
     <AppLayout>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
-          <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">ログイン</h2>
+        <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto rounded-lg">
+          <h2 className="text-2xl my-4 font-bold text-sky-600 text-center">ログイン</h2>
           <form onSubmit={handleSubmit} className="flex flex-col items-center">
             <p className='text-left'>メールアドレス</p>
             <input
@@ -39,7 +39,7 @@ export default function Login() {
               placeholder="メールアドレス"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mb-4 p-2 border border-gray-300 rounded w-3/5"
+              className="mb-4 p-2 border border-sky-300 rounded w-3/5"
             />
             <p className='text-left'>パスワード</p>
             <input
@@ -47,12 +47,12 @@ export default function Login() {
               placeholder="パスワード"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mb-4 p-2 border border-gray-300 rounded w-3/5"
+              className="mb-4 p-2 border border-sky-300 rounded w-3/5"
             />
-            <button type="submit" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5">ログイン</button>
+            <button type="submit" className="bg-sky-500 text-white my-4 px-4 py-2 rounded w-2/5 hover:bg-sky-600 duration-500 ">ログイン</button>
           </form>
           <p className="mt-4 text-center">
-            <a href="/auth/register" className="text-blue-500">アカウントの登録</a>
+            <a href="/auth/register" className="text-blue-500 hover:underline">アカウントの登録</a>
           </p>
         </div>
       </div>

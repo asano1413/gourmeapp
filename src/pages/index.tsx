@@ -44,6 +44,7 @@ export default function MapComponent() {
     setRestaurants(storedRestaurants);
   }, []);
 
+
   const handleModalToggle = () => setModalOpen(!isModalOpen);
   const handleDataInputRedirect = () => router.push('/dataInput');
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value);
@@ -65,16 +66,16 @@ export default function MapComponent() {
         <div className="flex justify-center mt-6 mb-4">
           <button
             onClick={() => setIsMapView(true)}
-            className={`relative overflow-hidden px-5 py-3 rounded-xl rounded-r-none shadow-md transition group border-2 border-blue-700 border-r-0 ${isMapView ? 'bg-sky-500 text-white hover:bg-sky-400' : 'bg-white text-sky-500 hover:bg-sky-100'}`}
+            className={`relative overflow-hidden px-5 py-3 rounded-xl rounded-r-none shadow-md transition group border-2 border-blue-700 border-r-0 ${isMapView ? 'bg-sky-500 text-white hover:bg-sky-600' : 'bg-white text-sky-500 hover:bg-sky-100'}`}
           >
-            <span className="absolute inset-0 bg-sky-100 scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></span>
+            <span className={`absolute inset-0 ${isMapView ? 'bg-sky-600' : 'bg-sky-100'} scale-0 group-hover:scale-100 transition-transform duration-300 origin-center`}></span>
             <span className="relative z-10">地図を表示</span>
           </button>
           <button
             onClick={() => setIsMapView(false)}
-            className={`relative overflow-hidden px-5 py-3 rounded-xl rounded-l-none shadow-md transition group border-2 border-blue-700 border-l-0 ${!isMapView ? 'bg-sky-500 text-white hover:bg-sky-400' : 'bg-white text-sky-500 hover:bg-sky-100'}`}
+            className={`relative overflow-hidden px-5 py-3 rounded-xl rounded-l-none shadow-md transition group border-2 border-blue-700 border-l-0 ${!isMapView ? 'bg-sky-500 text-white hover:bg-sky-600' : 'bg-white text-sky-500 hover:bg-sky-100'}`}
           >
-            <span className="absolute inset-0 bg-sky-100 scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></span>
+            <span className={`absolute inset-0 ${isMapView ? 'bg-sky-100' : 'bg-sky-600'} scale-0 group-hover:scale-100 transition-transform duration-300 origin-center`}></span>
             <span className="relative z-10">検索結果を表示</span>
           </button>
         </div>
@@ -93,12 +94,18 @@ export default function MapComponent() {
                   key={index}
                   position={{ lat: restaurant.lat, lng: restaurant.lng }}
                   onClick={() => handleMarkerClick(restaurant)}
+                  icon={{
+                    url: restaurant === selectedRestaurant
+                      ? 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                      : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                    scaledSize: new window.google.maps.Size(40, 40),
+                  }}
                 />
               ))}
             </GoogleMap>
             <button
               onClick={handleDataInputRedirect}
-              className="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-600"
+              className="fixed bottom-6 right-6 bg-sky-500 text-white px-6 py-4 rounded-xl shadow-lg hover:bg-sky-600"
             >
               データを追加
             </button>

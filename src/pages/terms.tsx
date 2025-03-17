@@ -4,8 +4,8 @@ import AppLayout from '@/components/AppLayout';
 export default function Terms() {
   return (
     <AppLayout>
-      <div className="container mx-auto mt-16 py-12 px-6 bg-gray-50 text-gray-700">
-        <h1 className="text-3xl font-bold mb-8 text-center">利用規約</h1>
+      <div className="container mx-auto py-12 px-6 bg-gray-50 text-gray-700">
+        <h1 className="text-3xl font-bold mt-16 mb-8 text-center">利用規約</h1>
         <div className="max-w-3xl mx-auto">
           <p className="mb-6">
             この利用規約（以下，「本規約」といいます。）は，本サービス管理者（以下，「管理者」といいます。）がこのウェブサイト上で提供するサービス（以下，「本サービス」といいます。）の利用条件を定めるものです。

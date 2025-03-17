@@ -43,7 +43,7 @@ export default function RestaurantForm() {
   };
 
   const fetchCoordinates = async (address: string) => {
-    const apiKey = 'AIzaSyAqN4yFqdVZKX8SNiCHZmAs1O6ZXmzwt1A';
+    const apiKey = 'AIzaSyC2tiKORNQDBhBRBj8Nxi0LGo4Gr8lG9v8';
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
     );
@@ -63,7 +63,7 @@ export default function RestaurantForm() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyC2tiKORNQDBhBRBj8Nxi0LGo4Gr8lG9v8&libraries=places`;
       script.async = true;
       script.onload = () => {
         if (typeof window.google !== 'undefined') {
@@ -83,7 +83,7 @@ export default function RestaurantForm() {
             const lng = marker.getPosition()?.lng();
             if (lat && lng) {
               const response = await fetch(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_GOOGLE_MAPS_API_KEY`
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyC2tiKORNQDBhBRBj8Nxi0LGo4Gr8lG9v8`
               );
               const data = await response.json();
               if (data.results.length > 0) {
@@ -100,8 +100,28 @@ export default function RestaurantForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-    // ここでバックエンドにデータを送信する処理を追加
+    // 既存のデータを取得
+    const existingData = JSON.parse(localStorage.getItem('restaurants') || '[]');
+
+    // 新しいデータを追加
+    const updatedData = [...existingData, formData];
+
+    // ローカルストレージに保存
+    localStorage.setItem('restaurants', JSON.stringify(updatedData));
+
+    console.log('データが保存されました:', formData);
+
+    // フォームをリセット
+    setFormData({
+      name: '',
+      address: '',
+      category: '',
+      openingHours: '',
+      lat: null,
+      lng: null,
+      rating: 0,
+      image: null,
+    });
   };
 
   return (
@@ -168,7 +188,7 @@ export default function RestaurantForm() {
           <div id="map" className="w-full h-64 mb-4 rounded-lg"></div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
+            className="w-full bg-sky-500 text-white py-3 rounded-lg hover:bg-sky-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
           >
             登録
           </button>

@@ -54,7 +54,7 @@ export default function Footer() {
 
       {/* コピーライト */}
       <div className="text-center text-gray-600 mt-6">
-        <p>© 2025 GourmeApp</p>
+        <p className='text-blue-500'>© 2025 GourmeApp</p>
       </div>
     </footer>
   );
