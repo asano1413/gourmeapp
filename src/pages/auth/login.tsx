@@ -23,7 +23,7 @@ export default function Login() {
       setIsAnimating(true);
       setTimeout(() => {
         router.push('/');
-      }, 2000);
+      }, 1000);
     }
   };
 

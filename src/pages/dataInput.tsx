@@ -43,7 +43,7 @@ export default function RestaurantForm() {
   };
 
   const fetchCoordinates = async (address: string) => {
-    const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+    const apiKey = 'AIzaSyAqN4yFqdVZKX8SNiCHZmAs1O6ZXmzwt1A';
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
     );

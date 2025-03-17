@@ -1,16 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '@/lib/db';  // Prisma クライアントをインポート
-import { getSession } from 'next-auth/react';  // NextAuth セッション
+import { prisma } from '@/lib/db';  // Prisma クライアントをインポート
+import { auth } from '@/auth';  // NextAuth セッション
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({ req });
+  const session = await auth();
 
   if (!session?.user) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       include: {
         followers: true,

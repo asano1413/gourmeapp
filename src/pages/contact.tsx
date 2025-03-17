@@ -57,7 +57,7 @@ const Contact = () => {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg ${error.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`text-gray-700 w-full px-3 py-2 border rounded-lg ${error.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 required
               />
               {error.name && <p className="text-red-500 text-sm">名前を入力してください。</p>}
@@ -69,18 +69,18 @@ const Contact = () => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg ${error.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`text-gray-700 w-full px-3 py-2 border rounded-lg ${error.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 required
               />
               {error.email && <p className="text-red-500 text-sm">有効なメールアドレスを入力してください。</p>}
             </div>
             <div className="mb-4">
-              <label htmlFor="message" className="block text-gray-700 font-bold mb-2">メッセージ</label>
+              <label htmlFor="message" className="block text-gray-700 font-bold mb-2">問い合わせ内容</label>
               <textarea
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg ${error.message ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`text-gray-700 w-full px-3 py-2 border rounded-lg ${error.message ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 rows={5}
                 maxLength={1000}
                 required

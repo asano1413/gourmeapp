@@ -1,31 +1,26 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '@/lib/db';  // Prisma クライアントをインポート
-import { getSession } from 'next-auth/react';  // NextAuth セッション
+import { prisma } from '@/lib/db'; // MariaDB接続
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
+  const { id } = req.query;
+  const userId = req.body?.userId; // ログインユーザーのIDを取得
 
-  const session = await getSession({ req });
-
-  if (!session?.user) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
-  const { userId } = req.body;
-
-  try {
-    const follow = await db.follow.create({
-      data: {
-        followerId: session.user.id,
-        followingId: parseInt(userId),
-      },
+  if (req.method === 'GET') {
+    const isFollowing = await prisma.follow.findFirst({
+      where: { followerId: userId, followingId: id },
     });
-
-    return res.status(200).json(follow);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.json({ isFollowing: Boolean(isFollowing) });
   }
+
+  if (req.method === 'POST') {
+    await prisma.follow.create({ data: { followerId: userId, followingId: id } });
+    return res.status(200).json({ message: 'フォローしました' });
+  }
+
+  if (req.method === 'DELETE') {
+    await prisma.follow.deleteMany({ where: { followerId: userId, followingId: id } });
+    return res.status(200).json({ message: 'フォロー解除しました' });
+  }
+
+  res.status(405).json({ error: 'Method Not Allowed' });
 }

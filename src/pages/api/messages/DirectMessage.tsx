@@ -1,21 +1,17 @@
-"use client"; // 必ず最上部に記載
-
+"use client";
 import { useState, useEffect } from 'react';
-// ※もし App Router (app ディレクトリ) を使っている場合は以下のインポートに変更
-// import { useRouter } from 'next/navigation';
 import { useRouter } from 'next/router';
 
 export default function DirectMessage() {
   const [recipientId, setRecipientId] = useState('');
-  const [sendContent, setSendContent] = useState('');     // 送信用のメッセージ内容
-  const [replyContent, setReplyContent] = useState('');     // 返信用のメッセージ内容
+  const [sendContent, setSendContent] = useState('');
+  const [replyContent, setReplyContent] = useState('');
   const [messageId, setMessageId] = useState('');
   const [messages, setMessages] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const router = useRouter();
 
-  // メッセージ履歴を取得する関数
   const fetchMessages = async () => {
     const res = await fetch('/api/messages/history');
     if (res.ok) {
@@ -43,7 +39,6 @@ export default function DirectMessage() {
     fetchFollowersAndFollowing();
   }, []);
 
-  // メッセージを送信する関数
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -63,7 +58,6 @@ export default function DirectMessage() {
     }
   };
 
-  // メッセージに返信する関数
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
 
