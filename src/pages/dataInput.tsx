@@ -105,9 +105,10 @@ export default function RestaurantForm() {
   };
 
   return (
-    <AppLayout>
-      <div className="mt-24 max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
-        <h2 className="text-2xl font-semibold mb-4 text-center text-blue-500">レビュー作成</h2>
+    <div className='bg-gray-100'>
+      <Header />
+      <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
+        <h2 className="mb-12 text-2xl font-semibold mb-4 text-center text-blue-500">レビュー作成</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -115,7 +116,7 @@ export default function RestaurantForm() {
             placeholder="店名"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg mb-3 text-black"
+            className="w-full p-3 border border-sky-400 rounded-lg mb-3 text-black"
             required
           />
           <input
@@ -124,7 +125,7 @@ export default function RestaurantForm() {
             placeholder="住所"
             value={formData.address}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg mb-3 text-black"
+            className="w-full p-3 border border-sky-400 rounded-lg mb-3 text-black"
             required
           />
           <input
@@ -133,7 +134,7 @@ export default function RestaurantForm() {
             placeholder="ジャンル (例: カフェ, ラーメン)"
             value={formData.category}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg mb-3 text-black"
+            className="w-full p-3 border border-sky-400 rounded-lg mb-3 text-black"
             required
           />
           <OpeningHours onChange={handleOpeningHoursChange} />
@@ -167,12 +168,16 @@ export default function RestaurantForm() {
           <div id="map" className="w-full h-64 mb-4 rounded-lg"></div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
           >
             登録
           </button>
         </form>
       </div>
-    </AppLayout>
+      <div className='bg-gray-100 py-6'>
+        <p></p>
+      </div>
+      <Footer />
+    </div>
   );
 }

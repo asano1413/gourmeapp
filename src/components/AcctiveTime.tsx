@@ -39,7 +39,7 @@ const OpeningHours: React.FC<OpeningHoursProps> = ({ onChange }) => {
               type="time"
               value={hours[day].open}
               onChange={(e) => handleChange(day, 'open', e.target.value)}
-              className="w-1/3 p-2 border rounded mr-2"
+              className="w-1/3 p-2 border border-sky-400 rounded mr-2"
               disabled={hours[day].closed}
             />
             <span className="mx-2">-</span>
@@ -47,7 +47,7 @@ const OpeningHours: React.FC<OpeningHoursProps> = ({ onChange }) => {
               type="time"
               value={hours[day].close}
               onChange={(e) => handleChange(day, 'close', e.target.value)}
-              className="w-1/3 p-2 border rounded mr-2"
+              className="w-1/3 p-2 border border-sky-400 rounded mr-2"
               disabled={hours[day].closed}
             />
             <label className="ml-2">

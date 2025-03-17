@@ -44,8 +44,8 @@ const Contact = () => {
 
   return (
     <AppLayout>
-      <main className="flex-grow mt-14 text-blue-500 text-center container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">お問い合わせ</h1>
+      <main className="flex-grow text-blue-500 text-center container mx-auto px-4 py-8 bg-gray-100">
+        <h1 className="text-3xl font-bold mt-6 mb-8">お問い合わせ</h1>
         {submitted ? (
           <p className="text-green-500">お問い合わせありがとうございます。メッセージが送信されました。</p>
         ) : (

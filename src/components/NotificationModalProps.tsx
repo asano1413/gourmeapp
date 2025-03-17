@@ -21,7 +21,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose, 
       <div className="bg-gray-50 p-8 rounded-lg shadow-lg relative w-2/3 max-w-2xl">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 bg-red-300 text-white px-4 py-2 rounded focus:outline-none hover:bg-red-500"
+          className="absolute top-2 right-2 bg-red-300 text-white px-3 py-2 rounded-[35px] focus:outline-none hover:bg-red-500 hover:rotate-90 duration-300 ease-in-out"
         >
           ✖
         </button>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SearchModal from '../components/SearchModal';
-import { GoogleMap, LoadScript, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
 import AppLayout from '@/components/AppLayout';
+import SearchResults from '@/components/SearchResults';
 
 const center = {
   lat: 35.682839,
@@ -28,25 +28,18 @@ export default function MapComponent() {
   const [isMapView, setIsMapView] = useState(true);
   const router = useRouter();
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const { isLoaded: isLoadedGoogleMap } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: 'AIzaSyAqN4yFqdVZKX8SNiCHZmAs1O6ZXmzwt1A',
-  })
 
   const onLoad = useCallback((map: google.maps.Map) => {
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
-    const bounds = new window.google.maps.LatLngBounds(center)
-    map.fitBounds(bounds)
-
+    const bounds = new window.google.maps.LatLngBounds(center);
+    map.fitBounds(bounds);
     setMap(map);
-  }, [])
+  }, []);
 
-  const onUnmount = React.useCallback((map: google.maps.Map) => {
+  const onUnmount = useCallback((map: google.maps.Map) => {
     setMap(null);
-  }, [])
+  }, []);
 
   useEffect(() => {
-    // ダミーデータとしてローカルストレージから取得（本来はAPIから取得）
     const storedRestaurants = JSON.parse(localStorage.getItem('restaurants') || '[]');
     setRestaurants(storedRestaurants);
   }, []);
@@ -66,37 +59,36 @@ export default function MapComponent() {
     setModalOpen(true);
   };
 
-  if (!isLoadedGoogleMap) {
-    return (
-      <AppLayout>
-        <p>地図を読み込んでいます...</p>
-      </AppLayout>
-    )
-  }
-
   return (
     <AppLayout>
-      <div className="relative mt-20">
-        <div className="flex justify-center space-x-4 mb-4">
+      <div className="relative bg-gray-100 p-4">
+        <div className="flex justify-center mt-6 mb-4">
           <button
-            onClick={handleToggleView}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-400 transition"
+            onClick={() => setIsMapView(true)}
+            className={`relative overflow-hidden px-5 py-3 rounded-xl rounded-r-none shadow-md transition group border-2 border-blue-700 border-r-0 ${isMapView ? 'bg-sky-500 text-white hover:bg-sky-400' : 'bg-white text-sky-500 hover:bg-sky-100'}`}
           >
-            {isMapView ? '検索結果を表示' : '地図を表示'}
+            <span className="absolute inset-0 bg-sky-100 scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></span>
+            <span className="relative z-10">地図を表示</span>
+          </button>
+          <button
+            onClick={() => setIsMapView(false)}
+            className={`relative overflow-hidden px-5 py-3 rounded-xl rounded-l-none shadow-md transition group border-2 border-blue-700 border-l-0 ${!isMapView ? 'bg-sky-500 text-white hover:bg-sky-400' : 'bg-white text-sky-500 hover:bg-sky-100'}`}
+          >
+            <span className="absolute inset-0 bg-sky-100 scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></span>
+            <span className="relative z-10">検索結果を表示</span>
           </button>
         </div>
 
         {isMapView ? (
-          // <LoadScript googleMapsApiKey="AIzaSyAqN4yFqdVZKX8SNiCHZmAs1O6ZXmzwt1A">
           <div className="relative w-[80%] h-[500px] mx-auto">
             <GoogleMap
-              onLoad={onLoad}
-              onUnmount={onUnmount}
               mapContainerStyle={{ width: '100%', height: '100%' }}
               center={center}
-              zoom={12}
+              zoom={15.0}
+              onLoad={onLoad}
+              onUnmount={onUnmount}
             >
-              {filteredRestaurants.map((restaurant, index) => (
+              {restaurants.map((restaurant, index) => (
                 <Marker
                   key={index}
                   position={{ lat: restaurant.lat, lng: restaurant.lng }}
@@ -104,28 +96,15 @@ export default function MapComponent() {
                 />
               ))}
             </GoogleMap>
+            <button
+              onClick={handleDataInputRedirect}
+              className="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-600"
+            >
+              データを追加
+            </button>
           </div>
-          // </LoadScript>
         ) : (
-          <div className="w-[80%] mx-auto">
-            <h2 className="text-xl font-semibold mb-4">検索結果</h2>
-            <ul className="space-y-4">
-              {filteredRestaurants.length > 0 ? (
-                filteredRestaurants.map((restaurant, index) => (
-                  <li key={index} className="p-4 border rounded-lg shadow-md">
-                    <h3 className="text-lg font-semibold text-blue-500">{restaurant.name}</h3>
-                    <p><strong>住所:</strong> {restaurant.address}</p>
-                    <p><strong>ジャンル:</strong> {restaurant.category}</p>
-                    <p><strong>営業時間:</strong> {restaurant.openingHours}</p>
-                    <p><strong>評価:</strong> {restaurant.rating}</p>
-                    {restaurant.image && <img src={restaurant.image} alt={restaurant.name} className="w-full h-auto mt-2" />}
-                  </li>
-                ))
-              ) : (
-                <p>検索結果がありません。</p>
-              )}
-            </ul>
-          </div>
+          <SearchResults results={filteredRestaurants} onSearch={setSearchQuery} />
         )}
 
         {selectedRestaurant && (
