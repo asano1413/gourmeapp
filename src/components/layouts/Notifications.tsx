@@ -81,7 +81,7 @@ function NotificationsModalLayout({ children, onClose }: NotificationsModalLayou
       <div className="bg-gray-50 p-8 rounded-lg shadow-lg relative w-2/3 max-w-2xl">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 bg-red-300 text-white w-[36px] h-[36px] rounded-[35px] flex justify-center items-center focus:outline-none hover:bg-red-500 hover:rotate-90 duration-300 ease-in-out"
+          className="absolute top-2 right-2 bg-red-300 text-white sizes-[36px] rounded-full flex justify-center items-center focus:outline-none hover:bg-red-500 hover:rotate-90 duration-300 ease-in-out"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill="#e3e3e3"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" /></svg>
           {/* ✖ */}

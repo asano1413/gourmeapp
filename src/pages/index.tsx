@@ -22,7 +22,6 @@ interface Restaurant {
 
 export default function MapComponent() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMapView, setIsMapView] = useState(true);
@@ -44,10 +43,7 @@ export default function MapComponent() {
     setRestaurants(storedRestaurants);
   }, []);
 
-
-  const handleModalToggle = () => setModalOpen(!isModalOpen);
   const handleDataInputRedirect = () => router.push('/dataInput');
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value);
   const handleToggleView = () => setIsMapView(!isMapView);
 
   const normalizeString = (str: string) => str.normalize('NFKC').toLowerCase();
@@ -57,7 +53,6 @@ export default function MapComponent() {
 
   const handleMarkerClick = (restaurant: Restaurant) => {
     setSelectedRestaurant(restaurant);
-    setModalOpen(true);
   };
 
   return (
@@ -114,19 +109,21 @@ export default function MapComponent() {
           <SearchResults results={filteredRestaurants} onSearch={setSearchQuery} />
         )}
 
+        {/* 選択されたレストランの情報をマップの下に表示 */}
         {selectedRestaurant && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded shadow-lg w-full max-w-md">
-              <h2 className="text-2xl font-semibold mb-4 text-blue-500 text-center">{selectedRestaurant.name}</h2>
-              <p><strong>住所:</strong> {selectedRestaurant.address}</p>
-              <p><strong>ジャンル:</strong> {selectedRestaurant.category}</p>
-              <p><strong>営業時間:</strong> {selectedRestaurant.openingHours}</p>
-              <p><strong>評価:</strong> {selectedRestaurant.rating}</p>
-              {selectedRestaurant.image && <img src={selectedRestaurant.image} alt={selectedRestaurant.name} className="w-full h-auto mb-4" />}
-              <button onClick={() => setSelectedRestaurant(null)} className="bg-red-500 text-white px-4 py-2 rounded">
-                閉じる
-              </button>
-            </div>
+          <div className="mt-6 p-6 bg-white shadow-lg rounded-lg max-w-2xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-4 text-blue-500 text-center">{selectedRestaurant.name}</h2>
+            <p><strong>住所:</strong> {selectedRestaurant.address}</p>
+            <p><strong>ジャンル:</strong> {selectedRestaurant.category}</p>
+            <p><strong>営業時間:</strong> {selectedRestaurant.openingHours}</p>
+            <p><strong>評価:</strong> {selectedRestaurant.rating}</p>
+            {selectedRestaurant.image && <img src={selectedRestaurant.image} alt={selectedRestaurant.name} className="w-full h-auto mb-4" />}
+            <button
+              onClick={() => setSelectedRestaurant(null)}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              閉じる
+            </button>
           </div>
         )}
       </div>

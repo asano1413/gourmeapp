@@ -40,7 +40,7 @@ export default function Profile() {
           <div className="flex flex-col items-center">
             <p><strong>名前:</strong> {user.name}</p>
             <p><strong>メールアドレス:</strong> {user.email}</p>
-            <Link href="/settings" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5 text-center">編集</Link>
+            <Link href="/settings" className="bg-gray-800 border-2 border-gray-800 text-white my-4 px-4 py-2 rounded w-2/5 text-center hover:bg-white hover:text-gray-600 duration-500 ease-in-out">編集</Link>
             {/* <button onClick={handleFollowToggle} className={`text-white my-4 px-4 py-2 rounded w-2/5 ${isFollowing ? "bg-red-500" : "bg-green-500"}`}>
               {isFollowing ? "フォロー解除" : "フォロー"}
             </button> */}

@@ -121,17 +121,18 @@ const Settings = () => {
                   className="w-full p-2 border rounded"
                   required
                 />
-                <button
+                {/* <button
                   type="button"
                   onClick={() => useCurrentProfile("password")}
                   className="ml-2 bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                 >
                   現在のパスワードを使用
-                </button>
+                </button> */}
               </div>
             </div>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">更新</button>
+            <button type="submit" className="bg-sky-500 w-full text-white px-4 py-2 border-2 border-sky-500 rounded hover:bg-white hover:text-sky-500">更新</button>
           </form>
+          <button type="submit" className="bg-sky-500 w-full text-white px-4 py-2 border-2 border-sky-500 rounded hover:bg-white hover:text-sky-500">更新</button>
         </div>
 
         <div className="mb-8">
@@ -161,7 +162,7 @@ const Settings = () => {
                 SMS通知を受け取る
               </label>
             </div>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">更新</button>
+            <button type="submit" className="bg-sky-500 w-full text-white px-4 py-2 border-2 border-sky-500 rounded hover:bg-white hover:text-sky-500">更新</button>
           </form>
         </div>
 

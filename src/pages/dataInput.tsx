@@ -21,6 +21,9 @@ export default function RestaurantForm() {
     lng: null,
     rating: 0,
     image: null as File | null,
+    reviews: [] as { content: string; reviewer: string }[],
+    reviewContent: '',
+    reviewer: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,8 +45,9 @@ export default function RestaurantForm() {
     setFormData({ ...formData, openingHours: JSON.stringify(hours) });
   };
 
+  const apiKey = 'AIzaSyC2tiKORNQDBhBRBj8Nxi0LGo4Gr8lG9v8';
+
   const fetchCoordinates = async (address: string) => {
-    const apiKey = 'AIzaSyC2tiKORNQDBhBRBj8Nxi0LGo4Gr8lG9v8';
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
     );
@@ -73,7 +77,7 @@ export default function RestaurantForm() {
           });
 
           const marker = new window.google.maps.Marker({
-            position: { lat: 35.6895, lng: 139.6917 },
+            position: { lat: 35.7895, lng: 139.7917 },
             map,
             draggable: true,
           });
@@ -83,7 +87,7 @@ export default function RestaurantForm() {
             const lng = marker.getPosition()?.lng();
             if (lat && lng) {
               const response = await fetch(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyC2tiKORNQDBhBRBj8Nxi0LGo4Gr8lG9v8`
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
               );
               const data = await response.json();
               if (data.results.length > 0) {
@@ -121,7 +125,24 @@ export default function RestaurantForm() {
       lng: null,
       rating: 0,
       image: null,
+      reviews: [],
+      reviewContent: '',
+      reviewer: '',
     });
+  };
+
+  const handleAddReview = () => {
+    if (formData.reviewContent && formData.reviewer) {
+      setFormData({
+        ...formData,
+        reviews: [
+          ...formData.reviews,
+          { content: formData.reviewContent, reviewer: formData.reviewer },
+        ],
+        reviewContent: '',
+        reviewer: '',
+      });
+    }
   };
 
   return (
@@ -136,7 +157,7 @@ export default function RestaurantForm() {
             placeholder="店名"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-3 border border-sky-400 rounded-lg mb-3 text-black"
+            className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
             required
           />
           <input
@@ -145,7 +166,7 @@ export default function RestaurantForm() {
             placeholder="住所"
             value={formData.address}
             onChange={handleChange}
-            className="w-full p-3 border border-sky-400 rounded-lg mb-3 text-black"
+            className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
             required
           />
           <input
@@ -154,7 +175,7 @@ export default function RestaurantForm() {
             placeholder="ジャンル (例: カフェ, ラーメン)"
             value={formData.category}
             onChange={handleChange}
-            className="w-full p-3 border border-sky-400 rounded-lg mb-3 text-black"
+            className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
             required
           />
           <OpeningHours onChange={handleOpeningHoursChange} />
@@ -186,6 +207,48 @@ export default function RestaurantForm() {
             </div>
           </div>
           <div id="map" className="w-full h-64 mb-4 rounded-lg"></div>
+          <div className="mb-4">
+            <label className="block text-black mb-2">口コミ</label>
+            <textarea
+              name="reviewContent"
+              placeholder="口コミを入力してください"
+              value={formData.reviewContent}
+              onChange={(e) => setFormData({ ...formData, reviewContent: e.target.value })}
+              className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-black mb-2">口コミ投稿者</label>
+            <input
+              type="text"
+              name="reviewer"
+              placeholder="投稿者名を入力してください"
+              value={formData.reviewer}
+              onChange={(e) => setFormData({ ...formData, reviewer: e.target.value })}
+              className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleAddReview}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mb-4"
+          >
+            口コミを追加
+          </button>
+          <div className="mb-4">
+            <h3 className="text-lg font-bold mb-2">追加された口コミ</h3>
+            {formData.reviews.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {formData.reviews.map((review, index) => (
+                  <li key={index} className="mb-2">
+                    <p className="text-gray-700"><strong>{review.reviewer}:</strong> {review.content}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">まだ口コミが追加されていません。</p>
+            )}
+          </div>
           <button
             type="submit"
             className="w-full bg-sky-500 text-white py-3 rounded-lg hover:bg-sky-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
@@ -193,9 +256,6 @@ export default function RestaurantForm() {
             登録
           </button>
         </form>
-      </div>
-      <div className='bg-gray-100 py-6'>
-        <p></p>
       </div>
       <Footer />
     </div>

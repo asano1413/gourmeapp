@@ -18,11 +18,11 @@ interface Store {
 }
 
 interface SearchResultsProps {
-  results: Store[];
+  results?: Store[]; // `results`をオプショナルに変更
   onSearch: (query: string) => void;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({ results, onSearch }) => {
+const SearchResults: React.FC<SearchResultsProps> = ({ results = [], onSearch }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const itemsPerPage = 10;
@@ -46,26 +46,17 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onSearch }) => {
           placeholder="検索キーワード"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 border border-sky-700 rounded-xl w-2/5 mb-4"
+          className="p-2 border border-sky-700 rounded-xl w-full md:w-2/5 mb-4"
         />
-        <button type="submit" className="relative overflow-hidden bg-sky-500 text-white px-4 py-2 rounded-lg shadow-md transition group ml-2 h-full mb-4">
-          <span className="absolute inset-0 bg-sky-300 scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></span>
-          <span className="relative z-10">
-            検索
-          </span>
+        <button type="submit" className="relative bg-sky-500 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:bg-sky-400 ml-2 mb-4">
+          検索
         </button>
       </form>
-      {results.length === 0 ? (
+      {!results || results.length === 0 ? (
         <div className="flex items-center justify-center mt-14">
           <div className="text-center bg-sky-100 px-16 py-10 rounded-[50px] shadow-md mb-8">
             <h2 className="text-2xl font-bold mb-4">検索結果が見つかりませんでした</h2>
             <p className="text-gray-700">別のキーワードで検索してみてください。</p>
-          </div>
-          <div className='text-center bg-sky-100 p-5 rounded-full shadow-md ml-8 mt-12'>
-            <p></p>
-          </div>
-          <div className='text-center bg-sky-100 p-3 rounded-full shadow-md ml-8 mt-16'>
-            <p></p>
           </div>
         </div>
       ) : (
@@ -77,7 +68,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onSearch }) => {
               <p className="text-gray-700 mb-1"><strong>星の数:</strong> {store.rating}</p>
               <p className="text-gray-700 mb-1"><strong>営業時間:</strong> {store.hours}</p>
               {store.image && <img src={store.image} alt={store.name} className="mb-2 w-full h-auto" />}
-              {store.reviews.length > 0 && (
+              {store.reviews?.length > 0 && (
                 <div className="mt-2 p-2 bg-gray-100 rounded">
                   <h3 className="text-lg font-semibold mb-1">レビュー</h3>
                   <p className="text-gray-700">{store.reviews[0].content}</p>

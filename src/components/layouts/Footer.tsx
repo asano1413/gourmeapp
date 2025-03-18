@@ -3,7 +3,7 @@ import { FaGithub, FaFacebook, FaTwitter } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer className="bg-cyan-50 text-blue-600 py-6">
+    <footer className="bg-gray-200 text-blue-600 py-6">
       <div className="container mx-auto px-4 text-center md:text-left flex flex-col md:flex-row justify-between items-center">
         {/* 左側のリンク */}
         <div className="mb-4 md:mb-0 ml-6">
