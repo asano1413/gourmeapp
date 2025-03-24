@@ -5,25 +5,13 @@ export default function Footer() {
   return (
     <footer className="bg-gray-200 text-blue-600 py-6">
       <div className="container mx-auto px-4 text-center md:text-left flex flex-col md:flex-row justify-between items-center">
-        {/* 左側のリンク */}
-        <div className="mb-4 md:mb-0 ml-6">
-          <p className="mb-2">
+        <div className="mb-4 md:mb-0 ml-6 flex justify-center md:justify-start">
+          <p className="mb-2 text-center">
             <a href="/terms" className="underline hover:text-blue-800 transition-colors duration-300">
               利用規約
             </a>
           </p>
-          <p className="text-gray-800">
-            コンタクト先：
-            <a
-              href="mailto:mit2471509@stu.o-hara.ac.jp"
-              className="underline text-blue-600 hover:text-blue-800 transition-colors duration-300"
-            >
-              mit2471509@stu.o-hara.ac.jp
-            </a>
-          </p>
         </div>
-
-        {/* 中央のソーシャルリンク */}
         <div className="flex space-x-4 mb-4 md:mb-0 md:mr-6">
           <a
             href="https://github.com"
@@ -51,10 +39,8 @@ export default function Footer() {
           </a>
         </div>
       </div>
-
-      {/* コピーライト */}
       <div className="text-center text-gray-600 mt-6">
-        <p className='text-blue-500'>© 2025 GourmeApp</p>
+        <p className="text-blue-500">© 2025 GourmeApp</p>
       </div>
     </footer>
   );

@@ -3,11 +3,19 @@ import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
 import AppLayout from '@/components/AppLayout';
 import SearchResults from '@/components/SearchResults';
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
 const center = {
   lat: 35.682839,
   lng: 139.759455,
 };
+
+interface Comment {
+  content: string;
+  reviewer: string;
+  likes: number;
+  replies: { content: string; reviewer: string }[];
+}
 
 interface Restaurant {
   lat: number;
@@ -18,13 +26,36 @@ interface Restaurant {
   openingHours: string;
   rating: number;
   image: string;
+  comments: Comment[];
 }
+
+const calculateAverageRating = (ratings: number[]): number => {
+  if (ratings.length === 0) return 0;
+  const sum = ratings.reduce((acc, rating) => acc + rating, 0);
+  return Math.round(sum / ratings.length * 2) / 2;
+};
+
+const renderStars = (averageRating: number) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (averageRating >= i) {
+      stars.push(<FaStar key={i} className="text-yellow-400 text-2xl" />);
+    } else if (averageRating >= i - 0.5) {
+      stars.push(<FaStarHalfAlt key={i} className="text-yellow-400 text-2xl" />);
+    } else {
+      stars.push(<FaRegStar key={i} className="text-gray-300 text-2xl" />);
+    }
+  }
+  return stars;
+};
 
 export default function MapComponent() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMapView, setIsMapView] = useState(true);
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyContent, setReplyContent] = useState<string>('');
   const router = useRouter();
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
@@ -34,7 +65,7 @@ export default function MapComponent() {
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback((map: google.maps.Map) => {
+  const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
 
@@ -44,16 +75,40 @@ export default function MapComponent() {
   }, []);
 
   const handleDataInputRedirect = () => router.push('/dataInput');
-  const handleToggleView = () => setIsMapView(!isMapView);
-
-  const normalizeString = (str: string) => str.normalize('NFKC').toLowerCase();
-  const filteredRestaurants = restaurants.filter((restaurant) =>
-    normalizeString(restaurant.name).includes(normalizeString(searchQuery))
-  );
-
   const handleMarkerClick = (restaurant: Restaurant) => {
     setSelectedRestaurant(restaurant);
   };
+
+  const handleLike = (commentIndex: number) => {
+    if (!selectedRestaurant) return;
+
+    const updatedComments = [...selectedRestaurant.comments];
+    updatedComments[commentIndex].likes += 1;
+
+    setSelectedRestaurant({
+      ...selectedRestaurant,
+      comments: updatedComments,
+    });
+  };
+
+  const handleReply = (commentIndex: number, replyContent: string, replyReviewer: string) => {
+    if (!selectedRestaurant) return;
+
+    const updatedComments = [...selectedRestaurant.comments];
+    updatedComments[commentIndex].replies.push({ content: replyContent, reviewer: replyReviewer });
+
+    setSelectedRestaurant({
+      ...selectedRestaurant,
+      comments: updatedComments,
+    });
+    setReplyContent('');
+    setReplyingTo(null);
+  };
+
+  const filteredRestaurants = restaurants.filter((restaurant) =>
+    restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    restaurant.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <AppLayout>
@@ -108,16 +163,87 @@ export default function MapComponent() {
         ) : (
           <SearchResults results={filteredRestaurants} onSearch={setSearchQuery} />
         )}
-
-        {/* 選択されたレストランの情報をマップの下に表示 */}
         {selectedRestaurant && (
           <div className="mt-6 p-6 bg-white shadow-lg rounded-lg max-w-2xl mx-auto">
             <h2 className="text-2xl font-semibold mb-4 text-blue-500 text-center">{selectedRestaurant.name}</h2>
             <p><strong>住所:</strong> {selectedRestaurant.address}</p>
             <p><strong>ジャンル:</strong> {selectedRestaurant.category}</p>
-            <p><strong>営業時間:</strong> {selectedRestaurant.openingHours}</p>
-            <p><strong>評価:</strong> {selectedRestaurant.rating}</p>
+            <p><strong>評価:</strong></p>
+            <div className="flex items-center mb-4">
+              {renderStars(selectedRestaurant.rating)}
+              <span className="ml-2 text-gray-700 text-lg">{selectedRestaurant.rating.toFixed(1)}</span>
+            </div>
+            <p><strong>営業時間:</strong></p>
+            <ul className="list-none pl-5 mb-4">
+              {selectedRestaurant.openingHours &&
+                Object.entries(JSON.parse(selectedRestaurant.openingHours)).map(([day, hours]: [string, any]) => (
+                  <li key={day} className="text-gray-700">
+                    <strong>{day}:</strong>{' '}
+                    {hours.closed
+                      ? '休業日'
+                      : `${hours.open} - ${hours.close}`}
+                  </li>
+                ))}
+            </ul>
             {selectedRestaurant.image && <img src={selectedRestaurant.image} alt={selectedRestaurant.name} className="w-full h-auto mb-4" />}
+            {selectedRestaurant.comments && selectedRestaurant.comments.length > 0 ? (
+              <div className="mt-6">
+                <h3 className="text-lg font-bold mb-2">コメント</h3>
+                <ul className="list-disc pl-5">
+                  {selectedRestaurant.comments.map((comment, index) => (
+                    <li key={index} className="mb-4">
+                      <p className="text-gray-700">
+                        <strong>{comment.reviewer}:</strong> {comment.content}
+                      </p>
+                      <div className="flex items-center mt-2">
+                        <button
+                          onClick={() => handleLike(index)}
+                          className="text-blue-500 hover:text-blue-700 mr-4"
+                        >
+                          👍 いいね ({comment.likes})
+                        </button>
+                        <button
+                          onClick={() => setReplyingTo(index)}
+                          className="text-green-500 hover:text-green-700"
+                        >
+                          💬 返信
+                        </button>
+                      </div>
+                      {replyingTo === index && (
+                        <div className="mt-2">
+                          <input
+                            type="text"
+                            placeholder="返信を入力してください"
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded mb-2"
+                          />
+                          <button
+                            onClick={() => handleReply(index, replyContent, "あなたの名前")}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                          >
+                            返信を送信
+                          </button>
+                        </div>
+                      )}
+                      {comment.replies.length > 0 && (
+                        <ul className="mt-2 pl-5 border-l border-gray-300">
+                          {comment.replies.map((reply, replyIndex) => (
+                            <li key={replyIndex} className="mb-2">
+                              <p className="text-gray-600">
+                                <strong>{reply.reviewer}:</strong> {reply.content}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-gray-500">まだコメントがありません。</p>
+            )}
             <button
               onClick={() => setSelectedRestaurant(null)}
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"

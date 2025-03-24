@@ -104,18 +104,52 @@ export default function RestaurantForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 既存のデータを取得
+
     const existingData = JSON.parse(localStorage.getItem('restaurants') || '[]');
 
-    // 新しいデータを追加
-    const updatedData = [...existingData, formData];
+    const existingRestaurantIndex = existingData.findIndex(
+      (restaurant: any) =>
+        restaurant.name === formData.name && restaurant.address === formData.address
+    );
 
-    // ローカルストレージに保存
-    localStorage.setItem('restaurants', JSON.stringify(updatedData));
+    if (existingRestaurantIndex !== -1) {
+      const existingRestaurant = existingData[existingRestaurantIndex];
 
-    console.log('データが保存されました:', formData);
+      const updatedRating =
+        (existingRestaurant.rating * existingRestaurant.comments.length + formData.rating) /
+        (existingRestaurant.comments.length + 1);
 
-    // フォームをリセット
+      const updatedComments = [
+        ...existingRestaurant.comments,
+        ...formData.reviews.map((review) => ({
+          content: review.content,
+          reviewer: review.reviewer,
+        })),
+      ];
+
+      const updatedRestaurant = {
+        ...existingRestaurant,
+        rating: updatedRating,
+        comments: updatedComments,
+      };
+
+      existingData[existingRestaurantIndex] = updatedRestaurant;
+    } else {
+      const newRestaurant = {
+        ...formData,
+        comments: formData.reviews.map((review) => ({
+          content: review.content,
+          reviewer: review.reviewer,
+        })),
+      };
+
+      existingData.push(newRestaurant);
+    }
+
+    localStorage.setItem('restaurants', JSON.stringify(existingData));
+
+    console.log('データが保存されました:', existingData);
+
     setFormData({
       name: '',
       address: '',
@@ -192,7 +226,7 @@ export default function RestaurantForm() {
           <div className="mb-4">
             <label className="block text-black mb-2">写真の挿入</label>
             <div className="flex items-center">
-              <label className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600">
+              <label className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-white hover:text-blue-500 border-2 border-blue-500 duration-500 ease-in-out">
                 ファイルを選択
                 <input
                   type="file"
@@ -218,7 +252,7 @@ export default function RestaurantForm() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-black mb-2">口コミ投稿者</label>
+            <label className="block text-black mb-2">口コミ投稿者名</label>
             <input
               type="text"
               name="reviewer"
@@ -231,7 +265,7 @@ export default function RestaurantForm() {
           <button
             type="button"
             onClick={handleAddReview}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mb-4"
+            className="bg-green-500 text-white px-4 py-2 border-2 border-green-500 rounded-lg hover:bg-white hover:text-green-500 duration-500 ease-in-out mb-4"
           >
             口コミを追加
           </button>
@@ -251,7 +285,7 @@ export default function RestaurantForm() {
           </div>
           <button
             type="submit"
-            className="w-full bg-sky-500 text-white py-3 rounded-lg hover:bg-sky-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
+            className="w-full mb-6 bg-sky-500 text-white py-3 rounded-lg hover:bg-sky-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
           >
             登録
           </button>
