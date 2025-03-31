@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '@/lib/db';  // Prisma クライアントをインポート
+import { prisma } from '@/lib/db';  // Prisma クライアントをインポート
 import { getSession } from 'next-auth/react';  // NextAuth セッション
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, id: string) {
   try {
-    const post = await db.post.findUnique({
+    const post = await prisma.post.findUnique({
       where: { id },
     });
 

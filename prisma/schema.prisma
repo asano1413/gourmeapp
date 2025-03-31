@@ -13,44 +13,14 @@ model User {
   email            String         @unique
   password         String
   createdAt        DateTime       @default(now())
-  likes            Like[]         @relation("UserLikes")
   followers        Follow[]       @relation("followers")
   following        Follow[]       @relation("following")
   messagesSent     Message[]      @relation("messagesSent")
   messagesReceived Message[]      @relation("messagesReceived")
   notifications    Notification[] @relation("notifications")
-  posts            Post[]
-}
-
-model Post {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  likes     Like[]   @relation("PostLikes")
-  userId    Int
-
-  user User  @relation(fields: [userId], references: [id])
-  tags Tag[]
-}
-
-model Like {
-  id        String   @id @default(uuid())
-  userId    Int
-  postId    String
-  createdAt DateTime @default(now())
-
-  user User @relation("UserLikes", fields: [userId], references: [id])
-  post Post @relation("PostLikes", fields: [postId], references: [id])
-
-  @@unique([userId, postId])
-}
-
-model Tag {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  posts Post[]
+  reviews          Review[]
+  reviewReplies    ReviewReply[]
+  ReviewLike       ReviewLike[]
 }
 
 model Follow {
@@ -87,4 +57,56 @@ model Notification {
   isRead    Boolean  @default(false)
 
   user User @relation("notifications", fields: [userId], references: [id])
+}
+
+model Store {
+  id  Int   @id @default(autoincrement())
+  lat Float
+  lng Float
+
+  name    String
+  address String
+
+  category     String
+  openingHours String
+  reviews      Review[]
+}
+
+model Review {
+  id      Int   @id @default(autoincrement())
+  userId  Int
+  user    User  @relation(fields: [userId], references: [id])
+  store   Store @relation(fields: [storeId], references: [id])
+  storeId Int
+
+  image   String
+  rating  Int
+  content String
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  reviewLikes   ReviewLike[]
+  reviewReplies ReviewReply[]
+}
+
+model ReviewReply {
+  id        Int      @id @default(autoincrement())
+  reviewId  Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+
+  review Review @relation(fields: [reviewId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model ReviewLike {
+  userId    Int
+  reviewId  Int
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  review Review @relation(fields: [reviewId], references: [id])
+
+  @@id([userId, reviewId])
 }
