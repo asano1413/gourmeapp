@@ -1,10 +1,11 @@
-import { signOut, useSession } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import React from "react";
+import { useSession, signOut } from "next-auth/react";
+import { useState } from 'react';
 import FlyoutMenu from './FlyoutMenu';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import NotificationsModal from './Notifications';
 import { APINotificationsResponse } from '@/pages/api/notifications';
 

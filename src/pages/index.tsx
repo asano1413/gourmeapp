@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from "react";
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
 import AppLayout from '@/components/AppLayout';
@@ -29,12 +29,6 @@ interface Restaurant {
   comments: Comment[];
 }
 
-const calculateAverageRating = (ratings: number[]): number => {
-  if (ratings.length === 0) return 0;
-  const sum = ratings.reduce((acc, rating) => acc + rating, 0);
-  return Math.round(sum / ratings.length * 2) / 2;
-};
-
 const renderStars = (averageRating: number) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -52,6 +46,8 @@ const renderStars = (averageRating: number) => {
 export default function MapComponent() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyContent, setReplyContent] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -87,7 +83,6 @@ export default function MapComponent() {
       comments: updatedComments,
     });
   };
-
 
   return (
     <AppLayout>
@@ -150,14 +145,17 @@ export default function MapComponent() {
             <p><strong>営業時間:</strong></p>
             <ul className="list-none pl-5 mb-4">
               {selectedRestaurant.openingHours &&
-                Object.entries(JSON.parse(selectedRestaurant.openingHours)).map(([day, hours]: [string, any]) => (
-                  <li key={day} className="text-gray-700">
-                    <strong>{day}:</strong>{' '}
-                    {hours.closed
-                      ? '休業日'
-                      : `${hours.open} - ${hours.close}`}
-                  </li>
-                ))}
+                Object.entries(JSON.parse(selectedRestaurant.openingHours)).map(([day, hours]) => {
+                  const hoursData = hours as { open: string; close: string; closed: boolean };
+                  return (
+                    <li key={day} className="text-gray-700">
+                      <strong>{day}:</strong>{' '}
+                      {hoursData.closed
+                        ? '休業日'
+                        : `${hoursData.open} - ${hoursData.close}`}
+                    </li>
+                  );
+                })}
             </ul>
             {selectedRestaurant.image && <img src={selectedRestaurant.image} alt={selectedRestaurant.name} className="w-full h-auto mb-4" />}
             {selectedRestaurant.comments && selectedRestaurant.comments.length > 0 ? (

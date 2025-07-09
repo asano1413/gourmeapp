@@ -1,13 +1,38 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { FaStar } from 'react-icons/fa';
 import Header from '../components/layouts/Header';
 import Footer from '../components/layouts/Footer';
 import OpeningHours from '../components/AcctiveTime';
-import AppLayout from '@/components/AppLayout';
+
+interface GoogleMapsOptions {
+  center: { lat: number; lng: number };
+  zoom: number;
+}
+
+interface MarkerOptions {
+  position: { lat: number; lng: number };
+  map: unknown;
+  draggable: boolean;
+}
+
+interface MarkerInstance {
+  getPosition(): { lat(): number; lng(): number } | null;
+}
+
+interface GoogleMaps {
+  maps: {
+    Map: new (element: HTMLElement, options: GoogleMapsOptions) => unknown;
+    Marker: new (options: MarkerOptions) => MarkerInstance;
+    event: {
+      addListener: (object: MarkerInstance, event: string, handler: () => void) => void;
+    };
+    Size: new (width: number, height: number) => { width: number; height: number };
+  };
+}
 
 declare global {
   interface Window {
-    google: any;
+    google: GoogleMaps;
   }
 }
 
@@ -17,8 +42,8 @@ export default function RestaurantForm() {
     address: '',
     category: '',
     openingHours: '',
-    lat: null,
-    lng: null,
+    lat: null as number | null,
+    lng: null as number | null,
     rating: 0,
     image: null as File | null,
     reviews: [] as { content: string; reviewer: string }[],
@@ -71,31 +96,35 @@ export default function RestaurantForm() {
       script.async = true;
       script.onload = () => {
         if (typeof window.google !== 'undefined') {
-          const map = new window.google.maps.Map(document.getElementById('map') as HTMLElement, {
-            center: { lat: 35.6895, lng: 139.6917 },
-            zoom: 15,
-          });
+          const mapElement = document.getElementById('map') as HTMLElement;
+          if (mapElement) {
+            const map = new window.google.maps.Map(mapElement, {
+              center: { lat: 35.6895, lng: 139.6917 },
+              zoom: 15,
+            });
 
-          const marker = new window.google.maps.Marker({
-            position: { lat: 35.7895, lng: 139.7917 },
-            map,
-            draggable: true,
-          });
+            const marker = new window.google.maps.Marker({
+              position: { lat: 35.7895, lng: 139.7917 },
+              map,
+              draggable: true,
+            });
 
-          window.google.maps.event.addListener(marker, 'dragend', async function () {
-            const lat = marker.getPosition()?.lat();
-            const lng = marker.getPosition()?.lng();
-            if (lat && lng) {
-              const response = await fetch(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
-              );
-              const data = await response.json();
-              if (data.results.length > 0) {
-                const address = data.results[0].formatted_address;
-                setFormData({ ...formData, address, lat, lng });
+            window.google.maps.event.addListener(marker, 'dragend', async function () {
+              const position = marker.getPosition();
+              if (position) {
+                const lat = position.lat();
+                const lng = position.lng();
+                const response = await fetch(
+                  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
+                );
+                const data = await response.json();
+                if (data.results.length > 0) {
+                  const address = data.results[0].formatted_address;
+                  setFormData({ ...formData, address, lat, lng });
+                }
               }
-            }
-          });
+            });
+          }
         }
       };
       document.head.appendChild(script);
@@ -108,7 +137,7 @@ export default function RestaurantForm() {
     const existingData = JSON.parse(localStorage.getItem('restaurants') || '[]');
 
     const existingRestaurantIndex = existingData.findIndex(
-      (restaurant: any) =>
+      (restaurant: { name: string; address: string }) =>
         restaurant.name === formData.name && restaurant.address === formData.address
     );
 
@@ -206,88 +235,69 @@ export default function RestaurantForm() {
           <input
             type="text"
             name="category"
-            placeholder="ジャンル (例: カフェ, ラーメン)"
+            placeholder="ジャンル"
             value={formData.category}
             onChange={handleChange}
             className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
             required
           />
-          <OpeningHours onChange={handleOpeningHoursChange} />
-          <div className="flex mb-3 items-center">
-            <p className="text-black mr-2">評価 :</p>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaStar
-                key={star}
-                className={`cursor-pointer text-2xl ${star <= formData.rating ? "text-yellow-400" : "text-gray-300"}`}
-                onClick={() => handleRatingClick(star)}
-              />
-            ))}
-          </div>
           <div className="mb-4">
-            <label className="block text-black mb-2">写真の挿入</label>
-            <div className="flex items-center">
-              <label className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-white hover:text-blue-500 border-2 border-blue-500 duration-500 ease-in-out">
-                ファイルを選択
-                <input
-                  type="file"
-                  name="image"
-                  onChange={handleFileChange}
-                  className="hidden"
+            <label className="block text-gray-700 font-bold mb-2">評価</label>
+            <div className="flex space-x-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  className={`text-2xl cursor-pointer ${star <= formData.rating ? 'text-yellow-400' : 'text-gray-300'
+                    }`}
+                  onClick={() => handleRatingClick(star)}
                 />
-              </label>
-              {formData.image && (
-                <span className="ml-2 text-black">{formData.image.name}</span>
-              )}
+              ))}
             </div>
           </div>
-          <div id="map" className="w-full h-64 mb-4 rounded-lg"></div>
+          <OpeningHours onChange={handleOpeningHoursChange} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
+          />
           <div className="mb-4">
-            <label className="block text-black mb-2">口コミ</label>
-            <textarea
-              name="reviewContent"
-              placeholder="口コミを入力してください"
-              value={formData.reviewContent}
-              onChange={(e) => setFormData({ ...formData, reviewContent: e.target.value })}
-              className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-black mb-2">口コミ投稿者名</label>
             <input
               type="text"
-              name="reviewer"
-              placeholder="投稿者名を入力してください"
+              placeholder="レビュアー名"
               value={formData.reviewer}
               onChange={(e) => setFormData({ ...formData, reviewer: e.target.value })}
-              className="w-full p-3 border border-gray-700 rounded-lg mb-3 text-black"
+              className="w-full p-3 border border-gray-700 rounded-lg mb-2 text-black"
             />
+            <textarea
+              placeholder="レビュー内容"
+              value={formData.reviewContent}
+              onChange={(e) => setFormData({ ...formData, reviewContent: e.target.value })}
+              className="w-full p-3 border border-gray-700 rounded-lg mb-2 text-black"
+              rows={4}
+            />
+            <button
+              type="button"
+              onClick={handleAddReview}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              レビューを追加
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleAddReview}
-            className="bg-green-500 text-white px-4 py-2 border-2 border-green-500 rounded-lg hover:bg-white hover:text-green-500 duration-500 ease-in-out mb-4"
-          >
-            口コミを追加
-          </button>
-          <div className="mb-4">
-            <h3 className="text-lg font-bold mb-2">追加された口コミ</h3>
-            {formData.reviews.length > 0 ? (
-              <ul className="list-disc pl-5">
+          {formData.reviews.length > 0 && (
+            <div className="mb-4">
+              <h3 className="font-bold mb-2">追加されたレビュー:</h3>
+              <ul>
                 {formData.reviews.map((review, index) => (
-                  <li key={index} className="mb-2">
-                    <p className="text-gray-700"><strong>{review.reviewer}:</strong> {review.content}</p>
+                  <li key={index} className="mb-2 p-2 bg-gray-100 rounded">
+                    <strong>{review.reviewer}:</strong> {review.content}
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="text-gray-500">まだ口コミが追加されていません。</p>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="w-full mb-6 bg-sky-500 text-white py-3 rounded-lg hover:bg-sky-600 shadow-[0_4px_0_#1e3a8a] hover:translate-y-[3px] hover:shadow-none duration-300 ease-in-out font-bold"
-          >
-            登録
+            </div>
+          )}
+          <button type="submit" className="bg-green-500 text-white w-full py-3 rounded-lg hover:bg-green-600">
+            投稿
           </button>
         </form>
       </div>

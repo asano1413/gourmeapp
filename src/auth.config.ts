@@ -12,18 +12,7 @@ declare module "next-auth" {
      interface User extends Omit<PrismaUser, "password"> {}
 }
 
-import { type JWT } from "next-auth/jwt";
-declare module "next-auth/jwt" {
-     interface JWT {
-          id: string;
-     }
-}
-
 export const authConfig = {
-     // pages: {
-     //      // signIn: "/login"
-     // },
-
      session: {
           strategy: "jwt",
      },
@@ -43,12 +32,14 @@ export const authConfig = {
                                    id: Number(token.id),
                               },
                          });
-     
+
                          if (user?.id) {
-                              session.user = user as any;
+                              const { password: _password, ...userWithoutPassword } = user;
+                              session.user = userWithoutPassword as Omit<PrismaUser, "password">;
                          }
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    } catch (error) {}
+                    } catch (error) {
+                         console.error("Session error:", error);
+                    }
                }
 
                return session;
@@ -56,7 +47,6 @@ export const authConfig = {
 
           signIn({ user }) {
                if (!user) {
-                    // throw new Error("No user found");
                     return false;
                }
                return true;
@@ -88,8 +78,7 @@ export const authConfig = {
                     }
 
                     if (await bcryptjs.compare(String(credentials.password), user.password)) {
-                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                         const { password: _p, ...userWithoutPassword } = user;
+                         const { password: _password, ...userWithoutPassword } = user;
 
                          return {
                               ...userWithoutPassword,
@@ -100,7 +89,5 @@ export const authConfig = {
                     return null;
                }
           }),
-
      ]
-
 } satisfies NextAuthConfig;

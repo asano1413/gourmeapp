@@ -54,7 +54,7 @@ const Settings = () => {
     console.log("通知設定更新:", notifications);
   };
 
-  const useCurrentProfile = (field: string) => {
+  const handleUseCurrentProfile = (field: string) => {
     setProfile({ ...profile, [field]: currentProfile[field as keyof typeof currentProfile] });
   };
 
@@ -81,7 +81,7 @@ const Settings = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => useCurrentProfile("username")}
+                  onClick={() => handleUseCurrentProfile("username")}
                   className="ml-2 bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                 >
                   現在のユーザー名を使用
@@ -102,7 +102,7 @@ const Settings = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => useCurrentProfile("email")}
+                  onClick={() => handleUseCurrentProfile("email")}
                   className="ml-2 bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                 >
                   現在のメールを使用
@@ -123,7 +123,7 @@ const Settings = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => useCurrentProfile("password")}
+                  onClick={() => handleUseCurrentProfile("password")}
                   className="ml-2 bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                 >
                   現在のパスワードを使用

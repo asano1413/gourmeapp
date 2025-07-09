@@ -1,114 +1,152 @@
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import AppLayout from '@/components/AppLayout';
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
-type ErrorsState = {
-  username: string[] | null;
-  email: string[] | null;
-  password: string[] | null;
-  confirmPassword: string[] | null;
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
 }
 
-export default function Register() {
+const Register = () => {
   const router = useRouter();
-  const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
-  const [formErrors, setFormErrors] = useState<ErrorsState>({ username: null, email: null, password: null, confirmPassword: null });
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    if (form.password !== form.confirmPassword) {
-      setFormErrors({ ...formErrors, confirmPassword: ['パスワードが一致しません'] });
-      return;
-    }
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
+      if (response.ok) {
+        const result = await signIn("credentials", {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        });
 
-    if (res.ok && res.status === 201) {
-      alert('登録が成功しました！');
-      router.push('/auth/login');
-    } else {
-      try {
-        const data = await res.json();
-        if (typeof data.errors === "object") {
-          setFormErrors({
-            username: data.errors.username ?? null,
-            email: data.errors.email ?? null,
-            password: data.errors.password ?? null,
-            confirmPassword: data.errors.confirmPassword ?? null,
-          });
+        if (result?.ok) {
+          router.push("/");
         }
-      } catch (error) {
-        setError('登録に失敗しました');
+      } else {
+        const data = await response.json();
+        setMessage(data.message || "登録に失敗しました");
       }
+    } catch {
+      setMessage("エラーが発生しました");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <AppLayout>
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 mt-16">
-        <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md my-12 mx-auto">
-          <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">登録</h2>
-          <form onSubmit={handleSubmit} className="flex flex-col items-center">
-            <p>アカウント名</p>
-            <input
-              type="text"
-              name="username"
-              placeholder="アカウント名"
-              value={form.username}
-              onChange={handleChange}
-              className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-            />
-            {formErrors.username && <p className="text-red-500">{formErrors.username}</p>}
-
-            <p>メールアドレス</p>
-            <input
-              type="email"
-              name="email"
-              placeholder="メールアドレス"
-              value={form.email}
-              onChange={handleChange}
-              className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-            />
-            {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
-
-            <p>パスワード</p>
-            <input
-              type="password"
-              name="password"
-              placeholder="パスワード"
-              value={form.password}
-              onChange={handleChange}
-              className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-            />
-            {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
-
-            <p>パスワード確認</p>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="パスワード確認"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-            />
-            {error && <p className="text-red-500">{error}</p>}
-            <button type="submit" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5">登録</button>
-          </form>
-          <p className="mt-4 text-center">
-            <a href="/auth/login" className="text-blue-500">ログインページへ</a>
-          </p>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            アカウント登録
+          </h2>
         </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="name" className="sr-only">
+                名前
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="名前"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">
+                メールアドレス
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="メールアドレス"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                パスワード
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="パスワード"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {message && (
+            <div className="text-red-600 text-center text-sm">{message}</div>
+          )}
+
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            >
+              {isLoading ? "登録中..." : "登録"}
+            </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              すでにアカウントをお持ちの方は{" "}
+              <Link href="/auth/login" className="text-indigo-600 hover:text-indigo-500">
+                こちら
+              </Link>
+            </p>
+          </div>
+        </form>
       </div>
-    </AppLayout>
+    </div>
   );
-}
+};
+
+export default Register;

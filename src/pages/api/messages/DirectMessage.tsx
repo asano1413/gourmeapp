@@ -1,149 +1,101 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
+import AppLayout from '@/components/AppLayout';
 
-export default function DirectMessage() {
-  const [recipientId, setRecipientId] = useState('');
-  const [sendContent, setSendContent] = useState('');
-  const [replyContent, setReplyContent] = useState('');
-  const [messageId, setMessageId] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
-  const router = useRouter();
+interface Message {
+  id: number;
+  content: string;
+  sender: string;
+  receiver: string;
+  createdAt: string;
+}
 
-  const fetchMessages = async () => {
-    const res = await fetch('/api/messages/history');
-    if (res.ok) {
-      const data = await res.json();
-      setMessages(data);
-    } else {
-      alert('メッセージ履歴の取得に失敗しました');
-    }
-  };
-
-  // フォロワーとフォロー中のユーザーを取得する関数
-  const fetchFollowersAndFollowing = async () => {
-    const res = await fetch('/api/user/followers-following');
-    if (res.ok) {
-      const data = await res.json();
-      setFollowers(data.followers);
-      setFollowing(data.following);
-    } else {
-      alert('フォロワーとフォロー中のユーザーの取得に失敗しました');
-    }
-  };
+const DirectMessagePage = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
+    // メッセージを取得する処理
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch('/api/messages/history');
+        const data = await response.json();
+        setMessages(data);
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      }
+    };
+
     fetchMessages();
-    fetchFollowersAndFollowing();
   }, []);
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
 
-    const res = await fetch('/api/messages/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipientId, content: sendContent }),
-    });
+    try {
+      const response = await fetch('/api/messages/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newMessage,
+          receiverId: 1, // 仮の受信者ID
+        }),
+      });
 
-    if (res.ok) {
-      alert('メッセージが送信されました');
-      setRecipientId('');
-      setSendContent('');
-      fetchMessages();
-    } else {
-      alert('メッセージの送信に失敗しました');
-    }
-  };
-
-  const handleReply = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const res = await fetch('/api/messages/receive', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messageId, content: replyContent }),
-    });
-
-    if (res.ok) {
-      alert('返信が送信されました');
-      setMessageId('');
-      setReplyContent('');
-      fetchMessages();
-    } else {
-      alert('返信の送信に失敗しました');
+      if (response.ok) {
+        setNewMessage('');
+        // メッセージリストを更新
+        const updatedMessages = await fetch('/api/messages/history');
+        const data = await updatedMessages.json();
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100">
-      {/* メッセージ送信 */}
-      <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
-        <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">メッセージ送信</h2>
-        <form onSubmit={handleSend} className="flex flex-col items-center">
-          <p className="text-left">受信者ID</p>
-          <select
-            value={recipientId}
-            onChange={(e) => setRecipientId(e.target.value)}
-            className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-          >
-            <option value="">選択してください</option>
-            {following.map((user: any) => (
-              <option key={user.id} value={user.id}>
-                {user.name} ({user.email})
-              </option>
-            ))}
-          </select>
-          <p className="text-left">メッセージ内容</p>
-          <textarea
-            placeholder="メッセージ内容"
-            value={sendContent}
-            onChange={(e) => setSendContent(e.target.value)}
-            className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-          />
-          <button type="submit" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5">送信</button>
-        </form>
-      </div>
+    <AppLayout>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8 text-center">ダイレクトメッセージ</h1>
 
-      {/* メッセージ返信 */}
-      <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
-        <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">メッセージ返信</h2>
-        <form onSubmit={handleReply} className="flex flex-col items-center">
-          <p className="text-left">メッセージID</p>
-          <input
-            type="text"
-            placeholder="メッセージID"
-            value={messageId}
-            onChange={(e) => setMessageId(e.target.value)}
-            className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-          />
-          <p className="text-left">返信内容</p>
-          <textarea
-            placeholder="返信内容"
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
-            className="mb-4 p-2 border border-gray-300 rounded w-3/5"
-          />
-          <button type="submit" className="bg-blue-500 text-white my-4 px-4 py-2 rounded w-2/5">返信</button>
-        </form>
-      </div>
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+            <div className="space-y-4 mb-4 max-h-96 overflow-y-auto">
+              {messages.map((message: Message) => (
+                <div key={message.id} className="flex flex-col">
+                  <div className="flex justify-between items-start">
+                    <span className="font-semibold text-sm text-gray-600">{message.sender}</span>
+                    <span className="text-xs text-gray-400">{new Date(message.createdAt).toLocaleString()}</span>
+                  </div>
+                  <p className="text-gray-800 mt-1">{message.content}</p>
+                </div>
+              ))}
+            </div>
 
-      {/* メッセージ履歴 */}
-      <div className="bg-white shadow-md rounded p-8 text-gray-700 w-full max-w-md mt-12 mx-auto">
-        <h2 className="text-2xl my-4 font-bold text-gray-800 text-center">メッセージ履歴</h2>
-        <ul>
-          {messages.map((message: any) => (
-            <li key={message.id} className="mb-4 p-2 border border-gray-300 rounded">
-              <p><strong>送信者ID:</strong> {message.senderId}</p>
-              <p><strong>受信者ID:</strong> {message.recipientId}</p>
-              <p><strong>内容:</strong> {message.content}</p>
-              <p><strong>送信日時:</strong> {new Date(message.createdAt).toLocaleString()}</p>
-            </li>
-          ))}
-        </ul>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="メッセージを入力..."
+                className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              />
+              <button
+                onClick={handleSendMessage}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+              >
+                送信
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
-}
+};
+
+export default DirectMessagePage;

@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import AppLayout from '@/components/AppLayout';
 
 export default function Login() {
@@ -51,8 +52,11 @@ export default function Login() {
             />
             <button type="submit" className="bg-sky-500 text-white my-4 px-4 py-2 rounded w-2/5 hover:bg-sky-600 duration-500 ">ログイン</button>
           </form>
-          <p className="mt-4 text-center">
-            <a href="/auth/register" className="text-blue-500 hover:underline">アカウントの登録</a>
+          <p className="text-center mt-4">
+            アカウントをお持ちでない方は{" "}
+            <Link href="/auth/register" className="text-blue-600 hover:text-blue-800">
+              こちら
+            </Link>
           </p>
         </div>
       </div>
